@@ -9,10 +9,10 @@ This impl requires the following:
 * An ngrok URL configured for an app on foursquare that points to your localhost/foursquare/push for push notification
 * A properties file located at `/Users/.../.lcp` named `lcp.properties` with the following format:
 
-    macAlgorithm=YOURVALHERE
-    macKey=YOURVALHERE
-    macKeyIdentifier=YOURVALHERE
-    lp_id=YOURVALHERE
+        macAlgorithm=YOURVALHERE
+        macKey=YOURVALHERE
+        macKeyIdentifier=YOURVALHERE
+        lp_id=YOURVALHERE
 
 ## Attributions
 
