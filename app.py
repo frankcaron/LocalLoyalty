@@ -16,9 +16,10 @@ from models import User
 
 
 app = Flask(__name__)
-app.config.from_pyfile('config.cfg')
-if os.environ.get('CONFIG'):
-    app.config.from_envvar('CONFIG')
+config = os.environ.get('CONFIG', None)
+if config is None:
+    raise ValueError('You need to set CONFIG in your environment variable to point to a file')
+app.config.from_envvar('CONFIG')
 db.app = app
 db.init_app(app)
 db.create_all()
