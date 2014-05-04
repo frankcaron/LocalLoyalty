@@ -1,0 +1,12 @@
+# We use Chishop as our primary location to look for dependencies;
+# if it's not found there we use our PyPI mirror, followed by
+# the main PyPI server
+--index-url=http://ops-build2.points.com:8000/pypi/
+--extra-index-url=http://pypi.points.com/simple
+--extra-index-url=https://pypi.python.org/simple/
+
+PyLCP==0.5.3
+Flask==0.10.1
+Flask-SQLAlchemy==1.0
+WTForms==1.0.5
+foursquare==2014.04.15

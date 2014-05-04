@@ -1,0 +1,10 @@
+{% from "_formhelpers.html" import render_field %}
+<form method=post action="/signup">
+  <dl>
+    {{ render_field(form.first_name) }}
+    {{ render_field(form.last_name) }}
+    {{ render_field(form.membership_number) }}
+    {{ render_field(form.email) }}
+  </dl>
+  <p><input type=submit value=Signup>
+</form>
