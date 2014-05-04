@@ -21,3 +21,7 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.membership_number
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
