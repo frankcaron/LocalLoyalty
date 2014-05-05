@@ -1,0 +1,41 @@
+/* 
+
+ Local Loyalty Styling
+ 2014, frankcaron.com
+
+*/
+
+/* ====== Base ======== */
+
+html {
+  font-family: sans-serif;
+  -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+}
+body {
+	background-color: #DDD;
+}
+
+/* ====== Struct ======== */
+
+div#header {
+
+}
+
+div#nav {
+
+}
+
+div#container {
+	width: 100%;
+}
+
+div#body {
+	width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 20px;
+	background-color: #EFF;
+	padding: 20px;
+	border: 1px solid #AAA;
+}
