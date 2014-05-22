@@ -1,14 +1,26 @@
+<!DOCTYPE html>
 <html>
 <head>
-	<title>Local Loyalty - Associate Your Account</title>
-	<link rel="stylesheet" type="text/css" href="style/localloyalty-main.css">
+    <title>LocalLoyalty - Associate Your Account</title>
+    <link href="style/localLoyalty-main.css" rel="stylesheet">
+
 </head>
-<body>
-	<div id="header"></div>
-	<div id="nav"></div>
-	<div id="container">
-		<div id="body">
-			{% from "_formhelpers.html" import render_field %}
+ <body>
+
+    <div class="container">
+      <div class="header">
+        <ul class="nav nav-pills pull-right">
+          <li class="active"><a href="signup.html">Associate Accounts</a></li>  
+          <li><a href="http://www.points.com/">Global Rewards Home</a></li>
+        </ul>
+        <h3 class="text-muted"><img src="style/globalrewards_logo.png" alt="Stormpath" /></h3>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Signup</h1>
+        <p class="lead">
+        	
+        	{% from "_formhelpers.html" import render_field %}
 			<form method="post" action="/signup">
   			<dl>
 				{{ render_field(form.first_name) }}
@@ -18,8 +30,32 @@
   			</dl>
  			<p><input type="submit" value="Signup"></p>
 			</form>
-		</div>
-	</div>
+
+        </p>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-6">
+          <h4>Get great deals: wherever, whenever!</h4>
+          <p>By associating your social networks with your Global Rewards account, you'll be able to receive special deals that you won't find anywhere else.</p>
+
+        </div>
+
+        <div class="col-lg-6">
+          <h4>Share the love, and we will, too!</h4>
+          <p>Great discounts, unique bonuses, and an elite, location-aware experience will make you an even more engaged and valued member!</p>
+
+        </div>
+      </div>
+
+      <div class="footer" align="center">
+        <p>&copy; Global Rewards, 2014</p>
+      </div>
+
+    </div> <!-- /container -->
+
+   
 </body>
 </html>
+
 
