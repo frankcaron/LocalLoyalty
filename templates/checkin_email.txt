@@ -1,0 +1,8 @@
+Dear {{ email }},
+
+You did it! You earned 2000 points
+
+Sincerely,
+
+Customer Support
+Points.com

@@ -1,18 +1,22 @@
 ## Local Loyalty
 
-A small project for [Points](http://www.points.com)' internal "Dragon's Den"-esque competition. Uses Foursquare's push API to award points when a user checks in at a specific venue.
+A small project for [Points](http://www.points.com)' internal "Dragon's Den"-esque competition.
+Uses Foursquare's push API to award points when a user checks in at a specific venue.
 
 ## Setup
 
 This impl requires the following:
 
 * An ngrok URL configured for an app on foursquare that points to your localhost/foursquare/push for push notification
-* A properties file located at `/Users/.../.lcp` named `lcp.properties` with the following format:
+* An environment variable called CONFIG that points to your configuration file.
+  Take a look at sample.cfg for a good example of what you can configure
+  
+## Pavement
 
-        macAlgorithm=YOURVALHERE
-        macKey=YOURVALHERE
-        macKeyIdentifier=YOURVALHERE
-        lp_id=YOURVALHERE
+There are some convenience functions/scripts to help with the following:
+
+* delete db
+* set config
 
 ## Attributions
 
@@ -24,5 +28,4 @@ Libs/frameworks used follow:
 ## Contributions
 
 Welcome, appreciated, etc.. Just don't steal my idea for the competition, internal peeps! ;)
-
     
