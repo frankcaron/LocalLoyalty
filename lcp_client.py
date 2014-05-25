@@ -22,7 +22,7 @@ class LCPClient(Client):
 
     def do_credit(self, user):
         lcp_response = self.post(
-            self.credit_url, data=self._create_mv_data(user))
+            self.credit_url, data=self._create_credit_data(user))
         lcp_response.raise_for_status()
         return lcp_response.json()
 
@@ -38,7 +38,7 @@ class LCPClient(Client):
         return json.dumps({
             'amount': self.credit_amount,
             'memberValidation': user.mv_url,
-            'firstName': user.first_name,
-            'lastName': user.last_name,
-            'email': user.email
+            # 'firstName': user.first_name,
+            # 'lastName': user.last_name,
+            # 'email': user.email
         })

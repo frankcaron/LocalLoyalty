@@ -1,0 +1,14 @@
+{% extends 'email_template.html' %}
+
+{% block body %}
+  <h3>Dear {{ email }},</h3>
+
+  <p>You did it! You earned {{ amount }} points</p>
+
+  <p>
+  Sincerely,<br />
+  Customer Support<br />
+  Points.com
+  </p>
+
+{% endblock %}

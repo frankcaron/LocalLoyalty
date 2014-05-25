@@ -1,6 +1,6 @@
 Dear {{ email }},
 
-You did it! You earned 2000 points
+You did it! You earned {{ amount }} points
 
 Sincerely,
 

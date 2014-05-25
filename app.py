@@ -75,23 +75,31 @@ def handle_foursquare_push():
     checkin_info = request.form.getlist('checkin')
     checkin_json_raw = checkin_info[0]
     checkin_json = json.loads(checkin_json_raw)
-    user = User.query.filter_by(foursquare_id=checkin_json['user']['id']).first()
-    if user and user.credit_url is None:
-        response = app.lcp_client.do_credit(user)
-        user.credit_url = response['links']['self']['href']
-        user.save()
-        _send_email(user.email)
-        return redirect(url_for('thanks'))
+    if checkin_json['venue']['id'] in app.config['ALLOWED_VENUES']:
+        # user = User.query.filter_by(foursquare_id=76462465).first()
+        user = User.query.filter_by(foursquare_id=checkin_json['user']['id']).first()
+        if user and user.credit_url is None:
+            response = app.lcp_client.do_credit(user)
+            user.credit_url = response['links']['self']['href']
+            user.save()
+            _send_email(user.email, response['amount'])
+            return redirect(url_for('thanks'))
 
     return render_template('error.html')
 
-def _send_email(email):
+
+def _send_email(email, amount):
     message = Message()
-    message.subject = 'You just received 2000 points!'
+    message.subject = 'You just received {} points!'.format(amount)
     message.recipients = [email]
     message.body = render_template(
         'checkin_email.txt',
-        email=email)
+        email=email,
+        amount=amount)
+    message.html = render_template(
+        'checkin_email.html',
+        email=email,
+        amount=amount)
     mail.send(message)
 
 #--- Initializations
