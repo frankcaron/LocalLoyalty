@@ -29,7 +29,7 @@ def set_config(options):
 
 @task
 @cmdopts([
-    make_option('-n', '--ngrok_url', help='Ngrok URL', default='https://6f0e36d9.ngrok.com'),
+    make_option('-n', '--ngrok_url', help='Ngrok URL', default='https://3103585.ngrok.com'),
 ])
 def set_ngrok_url(options):
     os.environ["NGROK_URL"] = options.set_ngrok_url.ngrok_url
@@ -45,6 +45,10 @@ def runngrok(options):
 
 
 @task
-@needs(['delete_db', 'set_config', 'set_ngrok_url'])
+@needs(['delete_db'])
 def runserver(options):
+    if not os.environ["CONFIG"]:
+        raise Exception("You need to set the CONFIG")
+    if not os.environ["NGROK_URL"]:
+        raise Exception("You need to set the NGROK_URL")
     call(["python", "app.py"])

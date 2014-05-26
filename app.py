@@ -1,28 +1,29 @@
+import foursquare
 import logging
 import os
 
-import foursquare
 from flask import Flask
 from flask import json
 from flask import request
 from flask import redirect
 from flask import url_for
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.templating import render_template
-from lcp_client import LCPClient
-from sqlalchemy.exc import IntegrityError
 from flask_mail import Mail
+from flask_mail import Message
+from flask.templating import render_template
+from sqlalchemy.exc import IntegrityError
 
 from forms import SignupForm
+from lcp_client import LCPClient
 from models import User
 from models import db
-from flask_mail import Message
 
 
 app = Flask(__name__)
 mail = Mail()
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 
 @app.route('/', methods=['GET'])
@@ -41,7 +42,7 @@ def signup():
         try:
             user.save()
         except IntegrityError as ex:
-            logger.info('User already registered', ex)
+            logger.exception(ex)
             return render_template('error.html')
         return redirect(app.foursquare_client.oauth.auth_url())
 
@@ -61,9 +62,10 @@ def foursquare_oauth_redirect():
     access_token = app.foursquare_client.oauth.get_token(foursquare_code)
     app.foursquare_client.set_access_token(access_token)
     foursquare_user = app.foursquare_client.users()
-    user = User.query.filter_by(email=foursquare_user['user']['contact']['email']).first()
+    email = foursquare_user['user']['contact']['email']
+    user = User.query.filter_by(email=email).first()
     if user is None:
-        logger.info("emails are different!")
+        logger.info("User with email {} has not signed up".format(email))
         render_template('error.html')
     user.foursquare_id = foursquare_user['user']['id']
     user.save()
@@ -72,20 +74,35 @@ def foursquare_oauth_redirect():
 
 @app.route('/foursquare/push', methods=['POST'])
 def handle_foursquare_push():
-    checkin_info = request.form.getlist('checkin')
-    checkin_json_raw = checkin_info[0]
-    checkin_json = json.loads(checkin_json_raw)
-    if checkin_json['venue']['id'] in app.config['ALLOWED_VENUES']:
-        # user = User.query.filter_by(foursquare_id=76462465).first()
-        user = User.query.filter_by(foursquare_id=checkin_json['user']['id']).first()
-        if user and user.credit_url is None:
-            response = app.lcp_client.do_credit(user)
-            user.credit_url = response['links']['self']['href']
-            user.save()
-            _send_email(user.email, response['amount'])
-            return redirect(url_for('thanks'))
+    checkin_info = request.form.getlist('checkin')[0]
+    checkin_json = json.loads(checkin_info)
+    logger.info('Recieved Push', checkin_json)
+    venue_id = checkin_json['venue']['id']
+    logger.info("Venue ID {}".format(venue_id))
+    foursquare_user_id = checkin_json['user']['id']
+    logger.info("User Checkin with id [{}]".format(foursquare_user_id))
 
-    return render_template('error.html')
+    if venue_id not in app.config['ALLOWED_VENUES']:
+        logger.info("Venue {} is not registered for this program".format(
+            venue_id))
+        return render_template('error.html')
+
+    user = User.query.filter_by(foursquare_id=foursquare_user_id).first()
+    # user = User.query.filter_by(foursquare_id=76462465).first()
+    if not user:
+        logger.info("User {} with id {} does not exist".format(
+            user, foursquare_user_id))
+        return render_template('error.html')
+    if user.credit_url:
+        logger.info("User {} with id {} has already redeemed".format(
+            user.email, foursquare_user_id))
+        return render_template('error.html')
+
+    response = app.lcp_client.do_credit(user)
+    user.credit_url = response['links']['self']['href']
+    user.save()
+    _send_email(user.email, response['amount'])
+    return redirect(url_for('thanks'))
 
 
 def _send_email(email, amount):
@@ -100,6 +117,7 @@ def _send_email(email, amount):
         'checkin_email.html',
         email=email,
         amount=amount)
+    logger.info("Sending email to {}".format(email))
     mail.send(message)
 
 #--- Initializations
