@@ -6879,3 +6879,7 @@ body {
   }
 }
 
+p.leader_text {
+  font-size: 12px;
+}
+
