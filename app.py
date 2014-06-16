@@ -8,19 +8,17 @@ from flask import request
 from flask import redirect
 from flask import url_for
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask_mail import Mail
-from flask_mail import Message
 from flask.templating import render_template
-from sqlalchemy.exc import IntegrityError
+import sendgrid
 
 from forms import SignupForm
 from lcp_client import LCPClient
 from models import User
 from models import db
+from sqlalchemy.sql.expression import desc
 
 
 app = Flask(__name__)
-mail = Mail()
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -41,7 +39,7 @@ def signup():
         user.mv_url = mv_response['links']['self']['href']
         try:
             user.save()
-        except IntegrityError as ex:
+        except Exception as ex:
             logger.exception(ex)
             return render_template('error.html')
         return redirect(app.foursquare_client.oauth.auth_url())
@@ -63,7 +61,7 @@ def foursquare_oauth_redirect():
     app.foursquare_client.set_access_token(access_token)
     foursquare_user = app.foursquare_client.users()
     email = foursquare_user['user']['contact']['email']
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(email=email).order_by(desc(User.id)).first()
     if user is None:
         logger.info("User with email {} has not signed up".format(email))
         render_template('error.html')
@@ -87,7 +85,8 @@ def handle_foursquare_push():
             venue_id))
         return render_template('error.html')
 
-    user = User.query.filter_by(foursquare_id=foursquare_user_id).first()
+    user = User.query.filter_by(
+        foursquare_id=foursquare_user_id).order_by(desc(User.id)).first()
     # user = User.query.filter_by(foursquare_id=76462465).first()
     if not user:
         logger.info("User {} with id {} does not exist".format(
@@ -106,19 +105,30 @@ def handle_foursquare_push():
 
 
 def _send_email(email, amount):
-    message = Message()
-    message.subject = 'You just received {} points!'.format(amount)
-    message.recipients = [email]
-    message.body = render_template(
-        'checkin_email.txt',
-        email=email,
-        amount=amount)
-    message.html = render_template(
-        'checkin_email.html',
-        email=email,
-        amount=amount)
-    logger.info("Sending email to {}".format(email))
-    mail.send(message)
+    sg = sendgrid.SendGridClient(
+        app.config['SENDGRID_USERNAME'],
+        app.config['SENDGRID_PASSWORD']
+    )
+
+    message = sendgrid.Mail()
+    message.add_to(email)
+    message.set_subject('You just received {} points!'.format(amount))
+    message.set_html(
+        render_template(
+            'checkin_email.html',
+            email=email,
+            amount=amount
+        )
+    )
+    message.set_text(
+        render_template(
+            'checkin_email.txt',
+            email=email,
+            amount=amount
+        )
+    )
+    message.set_from(app.config['MAIL_DEFAULT_SENDER'])
+    sg.send(message)
 
 #--- Initializations
 
@@ -151,13 +161,9 @@ def _init_config(app):
     app.config.from_envvar('CONFIG')
     _init_ngrok_url_config(app)
 
-def _init_mail(app):
-    mail.init_app(app)
-
 if __name__ == '__main__':
     _init_config(app)
     _init_db(app)
     _init_lcp_client(app)
     _init_foursquare_client(app)
-    _init_mail(app)
     app.run(host='0.0.0.0')

@@ -8,9 +8,9 @@ class User(db.Model):
     first_name = db.Column(db.String(80))
     last_name = db.Column(db.String(80))
     membership_number = db.Column(db.String(20))
-    email = db.Column(db.String(35), unique=True)
+    email = db.Column(db.String(35))
     mv_url = db.Column(db.String(50), unique=True)
-    foursquare_id = db.Column(db.Integer, unique=True)
+    foursquare_id = db.Column(db.Integer)
     credit_url = db.Column(db.String(50), unique=True)
 
     def __init__(self, first_name, last_name, membership_number, email):
