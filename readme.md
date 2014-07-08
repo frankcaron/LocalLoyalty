@@ -26,6 +26,8 @@ Libs/frameworks used follow:
 
     * Flask
     * PyLCP
+    * SendGrid
+    * Foursquare SDK
 
 ## Contributions
 
