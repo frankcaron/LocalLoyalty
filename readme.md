@@ -1,7 +1,9 @@
 ## Local Loyalty
 
 A small project for [Points](http://www.points.com)' internal "Dragon's Den"-esque competition.
-Uses Foursquare's push API to award points when a user checks in at a specific venue.
+Uses Foursquare's push API to award points when a user checks in at a specific venue. 
+
+Check out the [demo video here](https://www.youtube.com/watch?v=XK2ZrzlHRrQ).
 
 ## Setup
 
